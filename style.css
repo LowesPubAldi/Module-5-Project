@@ -1,0 +1,267 @@
+@import url(https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap);#app[data-v-5fdf2371]
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'roboto', sans-serif;
+}
+
+li {
+    list-style-type: none;
+}
+
+section {
+    background-color: white;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1000px;    
+    width: 100%;          
+    margin: 0 auto;      
+    padding: 0 20px;     
+}
+
+/* LANDING PAGE */
+
+.header {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 1000px;
+}
+
+.landing-page {
+    width: 100%;
+    height: 125px; 
+    margin: 0 auto;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+}
+
+/* NAVIGATION */
+
+nav {
+    height: 70px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+}
+
+nav a {
+    color: Black;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+
+nav a:hover{
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+#Hockey {
+    height: 100px;
+    width: 100px;
+}
+
+.nav__link--list {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav__link {
+    margin: 0 20px;
+}
+
+.nav__link--anchor {
+    text-decoration: none;
+    font-size: 20px;
+    color: #242424;
+    font-weight: 700;
+}
+
+.nav__link--list li { 
+    margin-right: 20px; 
+}
+
+.nav__link--list li:last-child {
+    margin-right: 0;
+}
+
+
+/* Body */
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    width: 100%;
+    height: 80px;
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: #ffffff;
+
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    background-color: #f8f9fa;
+}
+
+.title, .title__title-secondary {
+    margin: 0;
+}
+
+.search_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 300px;
+    color: #0177a6;
+}
+
+.search-button {
+    border: 1px solid #333; /* Darker border for better visibility */
+    background-color: #f0f0f0; /* Light background color */
+    color: #333; /* Text color */
+    padding: 10px 15px; /* Add some padding for a more substantial button */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Change cursor to indicate it's clickable */
+    transition: background-color 0.3s, border-color 0.3s;
+    margin-left: 5px; /* Smooth transitions */
+}
+
+.search-button img {
+    margin-right: 5px; /* Space between the icon and text */
+
+}
+
+.search-button:hover {
+    background-color: #e0e0e0;
+    border-color: #000;
+}
+
+#loadingMessage {
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#noResultsMessage {
+    display: none;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* MAIN */
+
+.sort-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#movie-list {
+    display: grid;
+    grid-template-columns: repeat(5, 180px);
+    gap: 10px;
+    justify-content: center;
+    width: 100%
+}
+
+.movie-card {
+    width: 180px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 1000px) {
+    #movie-list {
+        grid-template-columns: repeat(3, 180px);
+    }
+}
+
+@media (max-width: 700px) {
+    #movie-list {
+        grid-template-columns: repeat(2, 150px);
+    }
+}
+
+@media (max-width: 450px) {
+    #movie-list {
+    grid-template-columns: 1fr;}
+}
+
+.movie-card img {
+    width: 180px;
+    height: 270px;
+}
+
+.movie-card img{
+    width: 150px;
+    height: 225px;
+    object-fit: cover;
+    border: 1px solid black;
+    transition: transform 0.3s;
+}
+
+.movie-card img:hover{
+    transform: scale(1.05);
+}
+
+.movie-card h3{
+    margin: 5px 0;
+    font-size: 1rem;
+} 
+
+.movie-card p {
+    margin: 0;
+}
+
+/* FOOTER */
+
+Footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 20px;
+}
+
+#Copyright {
+    margin: 5px; 
+    box-sizing: border-box; 
+    border: 1px solid black; 
+    width: 20px;
+    height: 20px;
+}
