@@ -44,7 +44,10 @@ function renderMovies(moviesArray) {
 
     movieList.innerHTML ="";
 
-    moviesArray.forEach(movie => {
+    moviesArray.forEach(movie => {gi
+        const movieYear = movie.Year.match(/[--]$/)
+        ? `${movie.Year.trim()}Present`
+        : movie.Year;
         movieList.innerHTML += `
         <div class="movie-card">
                 <img class="movie__poster" 
@@ -52,7 +55,7 @@ function renderMovies(moviesArray) {
                 "./Assets/no-poster.jpg" : movie.Poster}" 
                 alt="${movie.Title}">
                 <h3>${movie.Title}</h3>
-                <p>${movie.Year}</p>
+                <p>${movieYear}</p>
                 </div>
                 `;
                 });
