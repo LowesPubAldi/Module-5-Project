@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Movies</title>
+    <script src="https://kit.fontawesome.com/022cb6386f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="index.js" defer></script>
+</head>
+<body>
+
+    <Section id="landing-page">
+        <nav>
+            <figure>
+                <img id="Hockey" src="./assets/Hockey Symbol.avif" alt="">
+            </figure>
+            <ul class="nav__link--list">
+                <li class="nav__link">
+                    <a href="#" class=""
+                    nav__link anchor
+                    link__hover-effect
+                    link__hover-effect--black">Movies
+                </a>
+                </li>
+                <li class="nav__link">
+                    <a href="#" class=""
+                    nav__link anchor
+                    link__hover-effect
+                    link__hover-effect--black">History
+                </a>
+                </li>
+                <li class="nav__link">
+                    <a href="#" class=""
+                    nav__link anchor
+                    link__hover-effect
+                    link__hover-effect--black">Leagues
+                </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <header>
+            <div class="header-content">
+                <h1 class="title">Non-Stop Action with Pucks & <span class="highlight">Sticks</span> 
+                </span></h1>
+                Several movies available.
+        </div>
+        <div class="search-container">
+            <form action="#" method="get">
+                <input id="searchBox" type="text" class="search-input" placeholder="Search">
+                <p id="noResultsMessage" style="display:none">No results matching your search.</p>
+                <button class="search-button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </div>
+        </header>
+
+<Main class="section">
+    <div class="sort-container">
+        <label for="sort-options">Sort By:</label>
+        <select id="sort-options">
+            <option value="disabled" selected disabled>Select sorting option</option>
+            <option value="az">A to Z</option>
+            <option value="za">Z to A</option>
+            <option value="oldest-newest">Oldest to Newest</option>
+            <option value="newest-oldest">Newest to Oldest</option>
+        </select>
+    </div>
+    <div id="movie-list">
+    </div>
+</div>
+    </main>
+    </Section>
+
+    <footer>
+    Copyright 2026 <img id="Copyright" src="./assets/vector-copyright-symbol-icon.webp" alt="">    
+    </footer>
+</body>
+</html>
