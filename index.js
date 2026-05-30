@@ -8,7 +8,7 @@ function fetchMovies(searchTerm) {
 
         loadingMessage.style.display = "block";
 
-    const url = `http://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&apikey=${api_key}`;
+    const url = `https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&apikey=${api_key}`;
 
     fetch(url) 
         .then(response => {
