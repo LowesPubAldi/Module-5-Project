@@ -18,18 +18,22 @@ function fetchMovies(searchTerm) {
             return response.json(); 
         })
 
-        .then(data => {
-            loadingMessage.style.display = "none";
-            const noResultsMessage = 
-            document.getElementById("noResultsMessage");
-            if (!data.Search) {
-                movies =[];
-                noResultsMessage.style.display = "block";
+.then(data => {
+    loadingMessage.style.display = "none";
+
+    const noResultsMessage = 
+        document.getElementById("noResultsMessage");
+
+    if (!data.Search) {
+        movies =[];
+        noResultsMessage.style.display = "block";
                 renderMovies(movies);
                 return;
             }
 
             noResultsMessage.style.display = "none";
+
+            console.log(data.Search);
 
             movies = data.Search;
             renderMovies(movies);
@@ -44,7 +48,7 @@ function renderMovies(moviesArray) {
 
     movieList.innerHTML ="";
 
-    moviesArray.forEach(movie => {gi
+    moviesArray.forEach(movie => {
         const movieYear = movie.Year.match(/[--]$/)
         ? `${movie.Year.trim()}Present`
         : movie.Year;
@@ -103,8 +107,9 @@ sortSelect.addEventListener("change", () => {
 
 /* Search Box Functionality */
 
-const searchForm = document.querySelector("form");
-const searchBox = document.getElementById("searchBox");
+document.addEventListener ("DOMContentLoaded", () => {
+    const searchForm = document.querySelector(".search-container form");
+    const searchBox = document.getElementById("searchBox");
 
 searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -115,4 +120,5 @@ searchForm.addEventListener("submit", (event) => {
         return;
     }
     fetchMovies(searchTerm);
-})
+});
+});
