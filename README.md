@@ -184,12 +184,12 @@ Production Checklist:
 
 ## Known Limitations
 
-- Proxy is local-only right now and not deployed to a hosted backend.
+- The live demo is deployed, but the Node proxy still needs its own hosted backend for a complete production setup.
 - OMDb may return incomplete poster/year metadata for some titles.
 
 ## Next Improvements
 
-- Deploy the proxy as a hosted backend for production use
+- Deploy the Node proxy as a hosted backend for the production version of the app
 - Add Lighthouse score snapshot for deployed desktop and mobile runs
 
 ## Credits
