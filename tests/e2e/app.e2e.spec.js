@@ -1,9 +1,10 @@
 const { test, expect } = require("@playwright/test");
 
-async function mockMovieApi(page) {
+async function mockMovieApi(page, { noResultsSearch = null, errorSearch = null } = {}) {
     await page.route("**/api/movies**", async route => {
         const requestUrl = new URL(route.request().url());
         const id = requestUrl.searchParams.get("id");
+        const search = requestUrl.searchParams.get("search");
         const pageParam = requestUrl.searchParams.get("page") || "1";
 
         if (id) {
@@ -19,6 +20,30 @@ async function mockMovieApi(page) {
                     Plot: "A mocked movie details payload for e2e tests.",
                     Runtime: "120 min",
                     imdbRating: "7.7"
+                })
+            });
+            return;
+        }
+
+        if (errorSearch && search === errorSearch) {
+            await route.fulfill({
+                status: 500,
+                contentType: "application/json",
+                body: JSON.stringify({
+                    Response: "False",
+                    Error: "Upstream service unavailable"
+                })
+            });
+            return;
+        }
+
+        if (noResultsSearch && search === noResultsSearch) {
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({
+                    Response: "False",
+                    Error: "Movie not found!"
                 })
             });
             return;
@@ -98,4 +123,28 @@ test("loads additional pages with Load More", async ({ page }) => {
     await expect.poll(async () => page.locator("#movie-list .movie-card").count(), {
         timeout: 15000
     }).toBeGreaterThan(firstCount);
+});
+
+test("shows a no-results message when the API returns no matches", async ({ page }) => {
+    await mockMovieApi(page, { noResultsSearch: "empty" });
+    await page.goto("/");
+
+    await page.fill("#searchBox", "empty");
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("#noResultsMessage")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("#movie-list .movie-card")).toHaveCount(0);
+    await expect(page.locator("#errorMessage")).toBeHidden();
+});
+
+test("shows an error message when the API request fails", async ({ page }) => {
+    await mockMovieApi(page, { errorSearch: "broken" });
+    await page.goto("/");
+
+    await page.fill("#searchBox", "broken");
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("#errorMessage")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("#movie-list .movie-card")).toHaveCount(0);
+    await expect(page.locator("#noResultsMessage")).toBeHidden();
 });

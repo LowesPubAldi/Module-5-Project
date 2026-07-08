@@ -28,7 +28,7 @@ Open http://localhost:3000 in your browser.
 - Proxy hardening with request validation, security headers, and gentle rate limiting
 - GitHub Actions CI workflow running unit and Playwright e2e tests
 - CI artifact upload for Playwright reports on failed runs
-- Playwright end-to-end starter tests for modal and pagination flows
+- Playwright end-to-end tests for modal, pagination, no-results, and API-error flows
 - Automated release workflow with version bump and changelog update
 - Keyboard-accessible controls and improved focus states
 - Mobile-friendly responsive layout
@@ -123,7 +123,7 @@ Raw report: docs/lighthouse/lighthouse-report.json
 2. Run npm test.
 3. Confirm all utility tests pass.
 4. Run npx playwright install chromium once.
-5. Run npm run test:e2e for end-to-end smoke tests.
+5. Run npm run test:e2e for end-to-end smoke tests covering modal, pagination, no-results, and API-error states.
 6. Run npm run healthcheck while the server is running.
 7. Run npm run release:check for one-command pre-release verification.
 
