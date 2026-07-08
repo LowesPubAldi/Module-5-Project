@@ -5,17 +5,21 @@
 ![E2E](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 ![Node](https://img.shields.io/badge/Node-20+-339933)
 
-A responsive movie discovery app powered by the OMDb API, focused on hockey-related titles with fast search, sorting, and clean card-based browsing.
+A polished movie discovery app powered by the OMDb API, focused on hockey-related titles with fast search, sorting, favorites, pagination, and accessible UI states.
 
 Live demo: [Hockey Movies Explorer | OMDb Search App](https://module-5-project.vercel.app/)
 
-## Portfolio Ready
+## Portfolio Snapshot
 
-- Strong project narrative with a clear rebuild story and lessons learned
+- Live demo deployed and linked for fast review
+- Clear product story with rebuild notes and lessons learned
+- Accessible interface with modal, favorites, and status messaging
 - Deterministic unit, e2e, and release-gate coverage
 - Secure proxy layer with validation, rate limiting, and server-side API key handling
-- Responsive UI with accessible controls, focus states, and modal interactions
-- Deployment instructions for hosting the app publicly through a backend-capable platform
+
+## Portfolio Ready
+
+This project is ready to present as a finished portfolio piece.
 
 ## Run In 2 Commands
 
