@@ -7,6 +7,14 @@
 
 A responsive movie discovery app powered by the OMDb API, focused on hockey-related titles with fast search, sorting, and clean card-based browsing.
 
+## Portfolio Ready
+
+- Strong project narrative with a clear rebuild story and lessons learned
+- Deterministic unit, e2e, and release-gate coverage
+- Secure proxy layer with validation, rate limiting, and server-side API key handling
+- Responsive UI with accessible controls, focus states, and modal interactions
+- Deployment instructions for hosting the app publicly through a backend-capable platform
+
 ## Run In 2 Commands
 
 1. npm install
@@ -142,6 +150,13 @@ Render:
 2. Create a new Web Service from this repo.
 3. Set API_KEY in Render environment variables.
 4. Deploy and use the generated app URL.
+
+Vercel:
+
+1. Use Vercel for the static front end if you split the proxy into a backend service.
+2. Keep API_KEY only in the backend environment, never in the browser bundle.
+3. Add the deployed URL to this README once the public app is live.
+4. Run the health check against the public backend URL after deployment.
 
 Railway:
 
