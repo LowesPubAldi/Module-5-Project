@@ -7,6 +7,8 @@
 
 A responsive movie discovery app powered by the OMDb API, focused on hockey-related titles with fast search, sorting, and clean card-based browsing.
 
+Live demo: [Hockey Movies Explorer | OMDb Search App](https://module-5-project.vercel.app/)
+
 ## Portfolio Ready
 
 - Strong project narrative with a clear rebuild story and lessons learned
@@ -155,7 +157,7 @@ Vercel:
 
 1. Use Vercel for the static front end if you split the proxy into a backend service.
 2. Keep API_KEY only in the backend environment, never in the browser bundle.
-3. Add the deployed URL to this README once the public app is live.
+3. Live demo: [Hockey Movies Explorer | OMDb Search App](https://module-5-project.vercel.app/)
 4. Run the health check against the public backend URL after deployment.
 
 Railway:
@@ -188,7 +190,6 @@ Production Checklist:
 ## Next Improvements
 
 - Deploy the proxy as a hosted backend for production use
-- Add a public live URL from deployed hosting
 - Add Lighthouse score snapshot for deployed desktop and mobile runs
 
 ## Credits
