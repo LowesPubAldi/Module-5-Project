@@ -1,0 +1,20 @@
+{
+  "name": "hockey-movies-explorer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "proxy": "node server.js",
+    "start": "node server.js",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "healthcheck": "node scripts/check-health.js",
+    "healthcheck:require-key": "set REQUIRE_API_KEY=true&& node scripts/check-health.js",
+    "release:check": "node scripts/pre-release-check.js",
+    "changelog:update": "node scripts/update-changelog.js",
+    "release:prepare": "npm run release:check && npm run changelog:update"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

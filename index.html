@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Movies</title>
+    <script src="https://kit.fontawesome.com/022cb6386f.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="movie-utils.js" defer></script>
+    <script src="index.js" defer></script>
+</head>
+<body>
+
+    <section id="landing-page">
+        <nav>
+            <figure>
+                <img id="Hockey" src="./Assets/Hockey Symbol.avif" alt="Hockey logo">
+            </figure>
+            <ul class="nav__link--list">
+                <li class="nav__link">
+                    <a href="#" class="nav__link--anchor link__hover-effect link__hover-effect--black">Movies</a>
+                </li>
+                <li class="nav__link">
+                    <a href="#" class="nav__link--anchor link__hover-effect link__hover-effect--black">History</a>
+                </li>
+                <li class="nav__link">
+                    <a href="#" class="nav__link--anchor link__hover-effect link__hover-effect--black">Leagues</a>
+                </li>
+            </ul>
+        </nav>
+        
+        <header>
+            <div class="header-content">
+                <h1 class="title">Non-Stop Action with Pucks & <span class="highlight">Sticks</span></h1>
+                <p>Several movies available.</p>
+            </div>
+            <div class="search-container">
+            <form action="#" method="get">
+                <label class="sr-only" for="searchBox">Search movies</label>
+                <div class="search-controls">
+                    <input id="searchBox" type="text" class="search-input" placeholder="Search by title" aria-label="Search movies by title" autocomplete="off">
+                    <button class="search-button" type="submit" title="Search movies" aria-label="Search movies">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button id="clearButton" class="clear-button" type="button" aria-label="Clear search">Clear</button>
+                </div>
+                <p id="loadingMessage" class="status-message" aria-live="polite">Loading movies...</p>
+                <p id="errorMessage" class="status-message error-message" role="alert">We could not load movies right now. Please try again.</p>
+                <p id="noResultsMessage" class="status-message" aria-live="polite">No results matching your search.</p>
+                <p id="resultsCount" class="results-count" aria-live="polite"></p>
+            </form>
+            </div>
+        </header>
+
+        <main class="section">
+            <div class="sort-container">
+                <label for="sort-options">Sort By:</label>
+                <select id="sort-options">
+                    <option value="disabled" selected disabled>Select sorting option</option>
+                    <option value="az">A to Z</option>
+                    <option value="za">Z to A</option>
+                    <option value="oldest-newest">Oldest to Newest</option>
+                    <option value="newest-oldest">Newest to Oldest</option>
+                </select>
+            </div>
+            <section class="favorites-panel" aria-labelledby="favoritesHeading">
+                <h2 id="favoritesHeading">Saved Favorites</h2>
+                <p id="favoritesEmpty" class="favorites-empty">No favorites yet. Click the star on a movie card to save one.</p>
+                <div id="favoritesList" class="favorites-list"></div>
+            </section>
+            <div id="movie-list">
+            </div>
+            <div class="pagination-controls">
+                <button id="loadMoreButton" class="load-more-button" type="button">Load More</button>
+                <p id="paginationStatus" class="pagination-status" aria-live="polite"></p>
+            </div>
+        </main>
+    </section>
+
+    <footer>
+    Copyright 2026 <img id="Copyright" src="./Assets/vector-copyright-symbol-icon.webp" alt="Copyright symbol">    
+    </footer>
+
+    <div id="detailsModal" class="details-modal" aria-hidden="true">
+        <div class="details-modal__backdrop" data-close-modal="true"></div>
+        <section class="details-modal__content" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+            <button id="closeDetailsButton" class="details-modal__close" type="button" aria-label="Close movie details">Close</button>
+            <p id="detailsLoading" class="status-message">Loading details...</p>
+            <p id="detailsError" class="status-message error-message">Could not load movie details. Please try again.</p>
+            <div id="detailsBody" class="details-body">
+                <h2 id="detailsTitle"></h2>
+                <p id="detailsMeta" class="details-meta"></p>
+                <p id="detailsGenre"></p>
+                <p id="detailsPlot"></p>
+                <p id="detailsRuntime"></p>
+                <p id="detailsRating"></p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
