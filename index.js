@@ -151,6 +151,28 @@ function formatDetailText(value, fallback = "Not available") {
     return value && value !== "N/A" ? value : fallback;
 }
 
+function formatMediaType(value, fallback = "Title") {
+    if (!value || value === "N/A") {
+        return fallback;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+
+    if (normalized === "movie") {
+        return "Movie";
+    }
+
+    if (normalized === "series") {
+        return "Series";
+    }
+
+    if (normalized === "game") {
+        return "Game";
+    }
+
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
 function setDetailsState({ loading = false, error = false, content = false } = {}) {
     setVisible(elements.detailsLoading, loading);
     setVisible(elements.detailsError, error);
@@ -198,9 +220,10 @@ function renderMovieDetails(movieDetails) {
     const title = formatDetailText(movieDetails.Title, "Movie Details");
     const year = formatDetailText(movieDetails.Year);
     const released = formatDetailText(movieDetails.Released);
+    const mediaType = formatMediaType(movieDetails.Type);
 
     elements.detailsTitle.textContent = title;
-    elements.detailsMeta.textContent = `${year} | Released: ${released}`;
+    elements.detailsMeta.textContent = `${year} | Type: ${mediaType} | Released: ${released}`;
     elements.detailsGenre.textContent = `Genre: ${formatDetailText(movieDetails.Genre)}`;
     elements.detailsPlot.textContent = `Plot: ${formatDetailText(movieDetails.Plot)}`;
     elements.detailsRuntime.textContent = `Runtime: ${formatDetailText(movieDetails.Runtime)}`;
@@ -239,6 +262,7 @@ function renderMoviesFocusPanel() {
 
     const rating = formatDetailText(details.imdbRating);
     const votes = formatDetailText(details.imdbVotes);
+    const mediaType = formatMediaType(details.Type);
     const topCast = formatCastList(details.Actors, 3);
     const fullCast = formatCastList(details.Actors, Number.POSITIVE_INFINITY);
 
@@ -246,7 +270,7 @@ function renderMoviesFocusPanel() {
     elements.focusRuntime.textContent = formatDetailText(details.Runtime);
     elements.focusGenre.textContent = formatDetailText(details.Genre);
     elements.focusRatingVotes.textContent = `${rating} (${votes} votes)`;
-    elements.focusRelease.textContent = `${formatDetailText(details.Year)} | ${formatDetailText(details.Released)}`;
+    elements.focusRelease.textContent = `${mediaType} | ${formatDetailText(details.Year)} | ${formatDetailText(details.Released)}`;
     elements.focusCreators.textContent = `${formatDetailText(details.Director)} | ${formatDetailText(details.Writer)}`;
     elements.focusTopCast.textContent = topCast;
     elements.focusFullCast.textContent = fullCast;
@@ -640,7 +664,9 @@ function renderMovies(moviesArray) {
         const movieCard = document.createElement("div");
         const moviePoster = document.createElement("img");
         const movieTitle = document.createElement("h3");
+        const movieYearRow = document.createElement("div");
         const movieYear = document.createElement("p");
+        const movieTypeBadge = document.createElement("span");
         const castTooltip = document.createElement("p");
         const favoriteButton = document.createElement("button");
         const detailsButton = document.createElement("button");
@@ -654,7 +680,13 @@ function renderMovies(moviesArray) {
         }, { once: true });
 
         movieTitle.textContent = movie.Title;
+    movieYearRow.className = "movie-year-row";
+    movieYear.className = "movie-year";
         movieYear.textContent = utilsFormatMovieYear(movie.Year);
+    movieTypeBadge.className = "movie-type-badge";
+    movieTypeBadge.textContent = formatMediaType(movie.Type);
+    movieTypeBadge.setAttribute("aria-label", `Type: ${formatMediaType(movie.Type)}`);
+    movieYearRow.append(movieYear, movieTypeBadge);
 
         castTooltip.className = "movie-cast-tooltip";
         castTooltip.textContent = isTouchDevice ? "Top Cast: Tap poster" : "Top Cast: Hover to load";
@@ -720,7 +752,7 @@ function renderMovies(moviesArray) {
             castTooltip.style.visibility = "visible";
         });
 
-        movieCard.append(moviePoster, movieTitle, movieYear, favoriteButton, detailsButton, castTooltip);
+        movieCard.append(moviePoster, movieTitle, movieYearRow, favoriteButton, detailsButton, castTooltip);
         fragment.appendChild(movieCard);
     });
 

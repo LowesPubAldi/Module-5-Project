@@ -663,6 +663,31 @@ a:focus-visible {
     margin: 0;
 }
 
+.movie-year-row {
+    margin-top: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.movie-year {
+    margin: 0;
+}
+
+.movie-type-badge {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #cdd5df;
+    background: #f6f8fb;
+    color: #334155;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
 /* FOOTER */
 
 footer{
