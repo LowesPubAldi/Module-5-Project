@@ -31,10 +31,10 @@
             </figure>
             <ul class="nav__link--list">
                 <li class="nav__link">
-                    <a href="#moviesSection" class="nav__link--anchor link__hover-effect link__hover-effect--black">Movies</a>
+                    <a href="/#movie" class="nav__link--anchor link__hover-effect link__hover-effect--black">Movies</a>
                 </li>
                 <li class="nav__link">
-                    <a href="#historySection" class="nav__link--anchor link__hover-effect link__hover-effect--black">History</a>
+                    <a href="/#historySection" class="nav__link--anchor link__hover-effect link__hover-effect--black">History</a>
                 </li>
             </ul>
         </nav>
@@ -62,7 +62,25 @@
             </div>
         </header>
 
-        <main id="moviesSection" class="section">
+        <section id="moviesSection" class="movies-focus-panel" aria-labelledby="moviesFocusHeading">
+            <h2 id="moviesFocusHeading">Movies</h2>
+            <p id="moviesFocusIntro" class="movies-focus-intro">Individual movie view with the details people care about most.</p>
+            <p id="moviesFocusEmpty" class="movies-focus-empty">Use the Movies nav or click "View Details" on a card to open a movie page route.</p>
+            <div id="moviesFocusBody" class="movies-focus-body">
+                <h3 id="moviesFocusTitle"></h3>
+                <p><strong>Runtime:</strong> <span id="focusRuntime">Not available</span></p>
+                <p><strong>Genre:</strong> <span id="focusGenre">Not available</span></p>
+                <p><strong>Rating / Votes:</strong> <span id="focusRatingVotes">Not available</span></p>
+                <p><strong>Release Year / Date:</strong> <span id="focusRelease">Not available</span></p>
+                <p><strong>Director & Writer:</strong> <span id="focusCreators">Not available</span></p>
+                <p><strong>Top Cast:</strong> <span id="focusTopCast">Not available</span></p>
+                <button id="focusCastToggle" class="focus-cast-toggle" type="button" aria-expanded="false">Show Full Cast</button>
+                <p id="focusFullCast" class="focus-full-cast">Not available</p>
+                <p><strong>Plot:</strong> <span id="focusPlot">Not available</span></p>
+            </div>
+        </section>
+
+        <main id="contentSection" class="section">
             <section id="historySection" class="favorites-panel" aria-labelledby="favoritesHeading">
                 <div class="favorites-header-row">
                     <h2 id="favoritesHeading">Saved Favorites</h2>

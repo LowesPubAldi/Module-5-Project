@@ -273,6 +273,102 @@ function setMoviesFocusDetails(details) {
     renderMoviesFocusPanel();
 }
 
+function setMoviesFocusMessage(messageText) {
+    if (!elements.moviesFocusEmpty) {
+        return;
+    }
+
+    elements.moviesFocusEmpty.textContent = messageText;
+}
+
+function setMoviesFocusLoading() {
+    if (elements.moviesFocusBody) {
+        elements.moviesFocusBody.style.display = "none";
+    }
+
+    setMoviesFocusMessage("Loading selected movie...");
+
+    if (elements.moviesFocusEmpty) {
+        elements.moviesFocusEmpty.style.display = "block";
+    }
+}
+
+function setMoviesFocusError(messageText) {
+    if (elements.moviesFocusBody) {
+        elements.moviesFocusBody.style.display = "none";
+    }
+
+    setMoviesFocusMessage(messageText);
+
+    if (elements.moviesFocusEmpty) {
+        elements.moviesFocusEmpty.style.display = "block";
+    }
+}
+
+function routeToMovie(imdbId) {
+    if (!/^tt\d{7,9}$/.test(String(imdbId))) {
+        return;
+    }
+
+    const nextHash = `#movie/${imdbId}`;
+
+    if (window.location.hash === nextHash) {
+        handleRouteChange();
+        return;
+    }
+
+    window.location.hash = nextHash;
+}
+
+async function handleRouteChange() {
+    const hashValue = window.location.hash.replace(/^#/, "");
+
+    if (hashValue === "movie") {
+        if (state.moviesFocusDetails) {
+            document.getElementById("moviesSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+        }
+
+        const firstMovie = state.movies.find(movie => /^tt\d{7,9}$/.test(String(movie.imdbID)));
+
+        if (firstMovie) {
+            routeToMovie(firstMovie.imdbID);
+            return;
+        }
+
+        setMoviesFocusError("Search for a movie, then open one from the results.");
+        return;
+    }
+
+    if (!hashValue.startsWith("movie/")) {
+        return;
+    }
+
+    const imdbId = hashValue.replace("movie/", "").trim();
+
+    if (!/^tt\d{7,9}$/.test(imdbId)) {
+        setMoviesFocusError("This movie route is invalid. Choose a movie from search results.");
+        return;
+    }
+
+    setMoviesFocusLoading();
+
+    try {
+        const details = await fetchMovieDetailsById(imdbId);
+
+        if (details.Response === "False") {
+            setMoviesFocusError("Could not load this movie right now. Try another title.");
+            return;
+        }
+
+        setMoviesFocusDetails(details);
+        document.getElementById("moviesSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+        console.error("Could not load route movie details:", error);
+        setMoviesFocusError("Could not load this movie route right now.");
+    }
+}
+
 async function fetchMovieDetailsById(imdbId) {
     return fetchFromProxy({ id: imdbId });
 }
@@ -578,7 +674,7 @@ function renderMovies(moviesArray) {
         detailsButton.className = "details-button";
         detailsButton.textContent = "View Details";
         detailsButton.addEventListener("click", () => {
-            showMovieDetails(movie);
+            routeToMovie(movie.imdbID);
         });
 
         const showCastPreview = (event) => {
@@ -827,6 +923,10 @@ function bindEvents() {
         });
     }
 
+    window.addEventListener("hashchange", () => {
+        handleRouteChange();
+    });
+
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && elements.detailsModal && elements.detailsModal.classList.contains("is-open")) {
             closeDetailsModal();
@@ -865,6 +965,7 @@ function initializeApp() {
     renderMoviesFocusPanel();
     updatePaginationUi();
     fetchMovies(DEFAULT_SEARCH);
+    handleRouteChange();
 }
 
 if (document.readyState === "loading") {
