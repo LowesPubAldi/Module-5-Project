@@ -372,6 +372,18 @@ function updatePaginationUi() {
     }
 }
 
+function hideAllCastPreviews(exceptElement = null) {
+    document.querySelectorAll(".movie-cast-tooltip.is-visible").forEach(tooltip => {
+        if (tooltip === exceptElement) {
+            return;
+        }
+
+        tooltip.classList.remove("is-visible", "is-touch");
+        tooltip.style.opacity = "0";
+        tooltip.style.visibility = "hidden";
+    });
+}
+
 function renderMovies(moviesArray) {
     if (!elements.movieList) {
         return;
@@ -380,6 +392,8 @@ function renderMovies(moviesArray) {
     elements.movieList.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
+
+    const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
     moviesArray.forEach(movie => {
         const movieCard = document.createElement("div");
@@ -402,7 +416,7 @@ function renderMovies(moviesArray) {
         movieYear.textContent = utilsFormatMovieYear(movie.Year);
 
         castTooltip.className = "movie-cast-tooltip";
-        castTooltip.textContent = "Top Cast: Hover to load";
+        castTooltip.textContent = isTouchDevice ? "Top Cast: Tap poster" : "Top Cast: Hover to load";
 
         const favoriteState = isFavorite(movie.imdbID);
         favoriteButton.type = "button";
@@ -425,6 +439,7 @@ function renderMovies(moviesArray) {
         const showCastPreview = (event) => {
             loadMovieCast(movie, castTooltip);
             positionCastTooltip(castTooltip, movieCard, event);
+            hideAllCastPreviews(castTooltip);
             castTooltip.classList.add("is-visible");
             castTooltip.style.opacity = "1";
             castTooltip.style.visibility = "visible";
@@ -435,7 +450,7 @@ function renderMovies(moviesArray) {
         };
 
         const hideCastPreview = () => {
-            castTooltip.classList.remove("is-visible");
+            castTooltip.classList.remove("is-visible", "is-touch");
             castTooltip.style.opacity = "0";
             castTooltip.style.visibility = "hidden";
         };
@@ -443,6 +458,26 @@ function renderMovies(moviesArray) {
         moviePoster.addEventListener("mouseenter", showCastPreview);
         moviePoster.addEventListener("mousemove", moveCastPreview);
         moviePoster.addEventListener("mouseleave", hideCastPreview);
+        moviePoster.addEventListener("click", event => {
+            if (!isTouchDevice) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isVisible = castTooltip.classList.contains("is-visible");
+            hideAllCastPreviews();
+
+            if (isVisible) {
+                return;
+            }
+
+            loadMovieCast(movie, castTooltip);
+            castTooltip.classList.add("is-visible", "is-touch");
+            castTooltip.style.opacity = "1";
+            castTooltip.style.visibility = "visible";
+        });
 
         movieCard.append(moviePoster, movieTitle, movieYear, favoriteButton, detailsButton, castTooltip);
         fragment.appendChild(movieCard);
@@ -650,6 +685,16 @@ function bindEvents() {
         if (event.key === "Escape" && elements.detailsModal && elements.detailsModal.classList.contains("is-open")) {
             closeDetailsModal();
         }
+    });
+
+    document.addEventListener("click", event => {
+        const target = event.target;
+
+        if (!(target instanceof Element) || target.closest(".movie-card")) {
+            return;
+        }
+
+        hideAllCastPreviews();
     });
 }
 
