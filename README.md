@@ -17,6 +17,24 @@ Live demo: [TitleScope | OMDb Search App](https://module-5-project.vercel.app/)
 - Deterministic unit, e2e, and release-gate coverage
 - Secure proxy layer with validation, rate limiting, and server-side API key handling
 
+## Tech Highlights
+
+- API integration through a validated Node proxy with server-side API key protection
+- Hash-based client-side routing for direct movie detail deep links
+- Dynamic rendering and client-side state management for search, pagination, and details
+- Persistent favorites storage with sorting and legacy key migration support
+- Resilient UX states for loading, no results, invalid routes, and upstream API failures
+- Responsive layout tuning across desktop, tablet (768), and mobile (375)
+- Automated test coverage via Node test runner and Playwright end-to-end checks
+
+## Engineering Signals Recruiters Look For
+
+- Production-minded error handling and user-facing feedback loops
+- Deployment debugging across local and hosted environments
+- Incremental refactoring and feature iteration under real usage feedback
+- Clean separation of concerns between UI behavior, utility logic, and proxy API layer
+- Repeatable quality checks before release (tests, health checks, release preflight)
+
 ## Portfolio Ready
 
 This project is ready to present as a finished portfolio piece.

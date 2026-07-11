@@ -361,6 +361,29 @@ a:focus-visible {
     gap: 8px;
 }
 
+.portfolio-highlights {
+    margin-top: 14px;
+    border: 1px solid #dbe4f0;
+    background: #f8fbff;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.portfolio-highlights h3 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #0f3d73;
+}
+
+.portfolio-highlights__list {
+    margin-left: 18px;
+    display: grid;
+    gap: 8px;
+    color: #1f2937;
+    line-height: 1.45;
+    font-size: 0.94rem;
+}
+
 .favorite-chip {
     border: 1px solid #d1d5db;
     border-radius: 999px;
