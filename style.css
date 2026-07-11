@@ -560,6 +560,30 @@ a:focus-visible {
 }
 
 @media (max-width: 900px) {
+    nav {
+        padding: 10px 14px;
+    }
+
+    .nav__link {
+        margin: 0 10px;
+    }
+
+    .nav__link--anchor {
+        font-size: 18px;
+    }
+
+    .search-container form {
+        width: min(90vw, 680px);
+    }
+
+    .search-controls {
+        gap: 6px;
+    }
+
+    .search-input {
+        width: min(100%, 400px);
+    }
+
     #movie-list {
         grid-template-columns: repeat(2, 180px);
         gap: 20px 64px;
