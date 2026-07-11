@@ -5,6 +5,8 @@ const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
 const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
 const DEFAULT_ERROR_MESSAGE = "We could not load movies right now. Please try again.";
+const DEFAULT_FOCUS_HEADING = "Movies";
+const DEFAULT_FOCUS_INTRO = "Individual movie view with the details people care about most.";
 const FALLBACK_MOVIES = [
     {
         imdbID: "fallback-1",
@@ -173,6 +175,49 @@ function formatMediaType(value, fallback = "Title") {
     return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
+function getMediaTypeConfig(value) {
+    const normalized = String(value || "").trim().toLowerCase();
+
+    if (normalized === "game") {
+        return {
+            label: "Game",
+            heading: "Games",
+            intro: "Individual game view with the details people care about most.",
+            iconClass: "fa-solid fa-gamepad"
+        };
+    }
+
+    if (normalized === "series") {
+        return {
+            label: "Series",
+            heading: "Series",
+            intro: "Individual series view with the details people care about most.",
+            iconClass: "fa-solid fa-tv"
+        };
+    }
+
+    return {
+        label: "Movie",
+        heading: "Movies",
+        intro: "Individual movie view with the details people care about most.",
+        iconClass: "fa-solid fa-clapperboard"
+    };
+}
+
+function setMoviesFocusContext(typeValue) {
+    const typeConfig = getMediaTypeConfig(typeValue);
+    const headingElement = document.getElementById("moviesFocusHeading");
+    const introElement = document.getElementById("moviesFocusIntro");
+
+    if (headingElement) {
+        headingElement.textContent = typeConfig.heading || DEFAULT_FOCUS_HEADING;
+    }
+
+    if (introElement) {
+        introElement.textContent = typeConfig.intro || DEFAULT_FOCUS_INTRO;
+    }
+}
+
 function setDetailsState({ loading = false, error = false, content = false } = {}) {
     setVisible(elements.detailsLoading, loading);
     setVisible(elements.detailsError, error);
@@ -255,6 +300,7 @@ function renderMoviesFocusPanel() {
     const details = state.moviesFocusDetails;
 
     if (!details) {
+        setMoviesFocusContext();
         elements.moviesFocusBody.style.display = "none";
         elements.moviesFocusEmpty.style.display = "block";
         return;
@@ -267,6 +313,7 @@ function renderMoviesFocusPanel() {
     const fullCast = formatCastList(details.Actors, Number.POSITIVE_INFINITY);
 
     elements.moviesFocusTitle.textContent = formatDetailText(details.Title, "Movie");
+    setMoviesFocusContext(details.Type);
     elements.focusRuntime.textContent = formatDetailText(details.Runtime);
     elements.focusGenre.textContent = formatDetailText(details.Genre);
     elements.focusRatingVotes.textContent = `${rating} (${votes} votes)`;
@@ -684,8 +731,10 @@ function renderMovies(moviesArray) {
     movieYear.className = "movie-year";
         movieYear.textContent = utilsFormatMovieYear(movie.Year);
     movieTypeBadge.className = "movie-type-badge";
-    movieTypeBadge.textContent = formatMediaType(movie.Type);
-    movieTypeBadge.setAttribute("aria-label", `Type: ${formatMediaType(movie.Type)}`);
+    const typeConfig = getMediaTypeConfig(movie.Type);
+    movieTypeBadge.innerHTML = `<i class="${typeConfig.iconClass}" aria-hidden="true"></i><span class="sr-only">${typeConfig.label}</span>`;
+    movieTypeBadge.setAttribute("aria-label", `Type: ${typeConfig.label}`);
+    movieTypeBadge.setAttribute("title", typeConfig.label);
     movieYearRow.append(movieYear, movieTypeBadge);
 
         castTooltip.className = "movie-cast-tooltip";
