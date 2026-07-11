@@ -4,9 +4,9 @@ const FAVORITES_STORAGE_KEY = "titlescope-favorites";
 const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
 const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
-const DEFAULT_ERROR_MESSAGE = "We could not load movies right now. Please try again.";
+const DEFAULT_ERROR_MESSAGE = "We could not load titles right now. Please try again.";
 const DEFAULT_FOCUS_HEADING = "Movies";
-const DEFAULT_FOCUS_INTRO = "Individual movie view with the details people care about most.";
+const DEFAULT_FOCUS_INTRO = "Individual title view with the details people care about most.";
 const FALLBACK_MOVIES = [
     {
         imdbID: "fallback-1",

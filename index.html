@@ -41,21 +41,21 @@
         
         <header>
             <div class="header-content">
-                <h1 class="title">Search Any Movie Title</h1>
+                <h1 class="title">Search Any Title</h1>
                 <p>Type a title and explore live OMDb results.</p>
             </div>
             <div class="search-container">
             <form action="#" method="get">
-                <label class="sr-only" for="searchBox">Search movies</label>
+                <label class="sr-only" for="searchBox">Search titles</label>
                 <div class="search-controls">
-                    <input id="searchBox" type="text" class="search-input" placeholder="Search by title" aria-label="Search movies by title" autocomplete="off">
-                    <button class="search-button" type="submit" title="Search movies" aria-label="Search movies">
+                    <input id="searchBox" type="text" class="search-input" placeholder="Search by title" aria-label="Search titles by name" autocomplete="off">
+                    <button class="search-button" type="submit" title="Search titles" aria-label="Search titles">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                     <button id="clearButton" class="clear-button" type="button" aria-label="Clear search">Clear</button>
                 </div>
-                <p id="loadingMessage" class="status-message" aria-live="polite">Loading movies...</p>
-                <p id="errorMessage" class="status-message error-message" role="alert">We could not load movies right now. Please try again.</p>
+                <p id="loadingMessage" class="status-message" aria-live="polite">Loading titles...</p>
+                <p id="errorMessage" class="status-message error-message" role="alert">We could not load titles right now. Please try again.</p>
                 <p id="noResultsMessage" class="status-message" aria-live="polite">No results matching your search.</p>
                 <p id="resultsCount" class="results-count" aria-live="polite"></p>
             </form>
