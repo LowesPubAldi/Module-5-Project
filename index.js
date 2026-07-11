@@ -3,7 +3,6 @@ const INPUT_DEBOUNCE_MS = 500;
 const FAVORITES_STORAGE_KEY = "titlescope-favorites";
 const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
-const FALLBACK_PROXY_BASE_URL = "https://hockey-movies-proxy.onrender.com/api/movies";
 const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
 const FALLBACK_MOVIES = [
     {
@@ -452,7 +451,7 @@ function updatePaginationUi() {
 }
 
 function getProxyBaseCandidates() {
-    const baseCandidates = [MOVIE_PROXY_BASE_URL, FALLBACK_PROXY_BASE_URL];
+    const baseCandidates = [MOVIE_PROXY_BASE_URL];
 
     if (state.activeProxyBase && baseCandidates.includes(state.activeProxyBase)) {
         return [
