@@ -1,13 +1,13 @@
-﻿# Hockey Movies Explorer
+﻿# TitleScope
 
 ![CI](https://img.shields.io/badge/CI-GitHub_Actions-blue)
 ![Unit Tests](https://img.shields.io/badge/Unit%20Tests-Passing-brightgreen)
 ![E2E](https://img.shields.io/badge/E2E-Playwright-2EAD33)
 ![Node](https://img.shields.io/badge/Node-20+-339933)
 
-A polished movie discovery app powered by the OMDb API, focused on hockey-related titles with fast search, sorting, favorites, pagination, and accessible UI states.
+A polished movie discovery app powered by the OMDb API, built around query-driven search with fast filtering, sorting, favorites, pagination, and accessible UI states.
 
-Live demo: [Hockey Movies Explorer | OMDb Search App](https://module-5-project.vercel.app/)
+Live demo: [TitleScope | OMDb Search App](https://module-5-project.vercel.app/)
 
 ## Portfolio Snapshot
 
@@ -72,7 +72,7 @@ flowchart LR
 
 ## Demo Walkthrough
 
-1. Search for a term like hockey or star.
+1. Search for a term like batman or star.
 2. Sort results by title or release year.
 3. Open View Details on any card to show modal data.
 4. Save and remove favorites.
@@ -128,7 +128,7 @@ Raw report: docs/lighthouse/lighthouse-report.json
 1. Type in the search box to trigger debounced search.
 2. Press Enter or click the search button for immediate search.
 3. Use Sort By to reorder results.
-4. Click Clear to reset search and reload default hockey titles.
+4. Click Clear to reset search and reload default batman titles.
 5. Click Load More to fetch additional result pages.
 
 ## Testing
@@ -161,7 +161,7 @@ Vercel:
 
 1. Use Vercel for the static front end if you split the proxy into a backend service.
 2. Keep API_KEY only in the backend environment, never in the browser bundle.
-3. Live demo: [Hockey Movies Explorer | OMDb Search App](https://module-5-project.vercel.app/)
+3. Live demo: [TitleScope | OMDb Search App](https://module-5-project.vercel.app/)
 4. Run the health check against the public backend URL after deployment.
 
 Railway:

@@ -1,7 +1,41 @@
-const DEFAULT_SEARCH = "hockey";
+const DEFAULT_SEARCH = "batman";
 const INPUT_DEBOUNCE_MS = 500;
-const FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
+const FAVORITES_STORAGE_KEY = "titlescope-favorites";
+const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
+const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
+const FALLBACK_MOVIES = [
+    {
+        imdbID: "fallback-1",
+        Title: "Miracle",
+        Year: "2004",
+        Poster: "N/A"
+    },
+    {
+        imdbID: "fallback-2",
+        Title: "The Mighty Ducks",
+        Year: "1992",
+        Poster: "N/A"
+    },
+    {
+        imdbID: "fallback-3",
+        Title: "Goon",
+        Year: "2011",
+        Poster: "N/A"
+    },
+    {
+        imdbID: "fallback-4",
+        Title: "Slap Shot",
+        Year: "1977",
+        Poster: "N/A"
+    },
+    {
+        imdbID: "fallback-5",
+        Title: "Ice Guardians",
+        Year: "2016",
+        Poster: "N/A"
+    }
+];
 
 function fallbackGetStartYear(yearText) {
     const matched = String(yearText).match(/^\d{4}/);
@@ -59,6 +93,7 @@ const state = {
     searchTerm: DEFAULT_SEARCH,
     debounceTimer: null,
     favorites: {},
+    castByMovieId: {},
     activeMovieId: null,
     lastFocusedElement: null,
     currentPage: 1,
@@ -199,7 +234,15 @@ async function showMovieDetails(movie) {
 
 function loadFavorites() {
     try {
-        const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+        let raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+
+        if (!raw) {
+            raw = localStorage.getItem(LEGACY_FAVORITES_STORAGE_KEY);
+
+            if (raw) {
+                localStorage.setItem(FAVORITES_STORAGE_KEY, raw);
+            }
+        }
 
         if (!raw) {
             return {};
@@ -272,6 +315,13 @@ function updateStatus({ loading = false, error = false, noResults = false } = {}
     setVisible(elements.noResultsMessage, noResults);
 }
 
+function getFallbackMovies(searchTerm) {
+    const normalized = searchTerm.toLowerCase();
+    return FALLBACK_MOVIES.filter(movie => {
+        return movie.Title.toLowerCase().includes(normalized);
+    });
+}
+
 function updateResultsCount(count, searchTerm) {
     if (!elements.resultsCount) {
         return;
@@ -289,6 +339,14 @@ function updateResultsCount(count, searchTerm) {
 
 function clearResultsCount() {
     updateResultsCount(0, "");
+}
+
+function setNoResultsMessage(messageText = DEFAULT_NO_RESULTS_MESSAGE) {
+    if (!elements.noResultsMessage) {
+        return;
+    }
+
+    elements.noResultsMessage.textContent = messageText;
 }
 
 function resetPagination() {
@@ -328,6 +386,7 @@ function renderMovies(moviesArray) {
         const moviePoster = document.createElement("img");
         const movieTitle = document.createElement("h3");
         const movieYear = document.createElement("p");
+        const castTooltip = document.createElement("p");
         const favoriteButton = document.createElement("button");
         const detailsButton = document.createElement("button");
 
@@ -341,6 +400,9 @@ function renderMovies(moviesArray) {
 
         movieTitle.textContent = movie.Title;
         movieYear.textContent = utilsFormatMovieYear(movie.Year);
+
+        castTooltip.className = "movie-cast-tooltip";
+        castTooltip.textContent = "Top Cast: Hover to load";
 
         const favoriteState = isFavorite(movie.imdbID);
         favoriteButton.type = "button";
@@ -360,7 +422,29 @@ function renderMovies(moviesArray) {
             showMovieDetails(movie);
         });
 
-        movieCard.append(moviePoster, movieTitle, movieYear, favoriteButton, detailsButton);
+        const showCastPreview = (event) => {
+            loadMovieCast(movie, castTooltip);
+            positionCastTooltip(castTooltip, movieCard, event);
+            castTooltip.classList.add("is-visible");
+            castTooltip.style.opacity = "1";
+            castTooltip.style.visibility = "visible";
+        };
+
+        const moveCastPreview = (event) => {
+            positionCastTooltip(castTooltip, movieCard, event);
+        };
+
+        const hideCastPreview = () => {
+            castTooltip.classList.remove("is-visible");
+            castTooltip.style.opacity = "0";
+            castTooltip.style.visibility = "hidden";
+        };
+
+        moviePoster.addEventListener("mouseenter", showCastPreview);
+        moviePoster.addEventListener("mousemove", moveCastPreview);
+        moviePoster.addEventListener("mouseleave", hideCastPreview);
+
+        movieCard.append(moviePoster, movieTitle, movieYear, favoriteButton, detailsButton, castTooltip);
         fragment.appendChild(movieCard);
     });
 
@@ -386,6 +470,7 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
         renderCurrentMovies();
         updateStatus();
         clearResultsCount();
+        setNoResultsMessage();
         updatePaginationUi();
         return;
     }
@@ -413,8 +498,16 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
 
         if (!Array.isArray(data.Search)) {
             if (!append) {
+                const tooManyResults = typeof data.Error === "string"
+                    && data.Error.toLowerCase().includes("too many results");
+
                 state.movies = [];
                 resetPagination();
+                setNoResultsMessage(
+                    tooManyResults
+                        ? `Too many matches for "${normalizedSearch}". Add one more character.`
+                        : DEFAULT_NO_RESULTS_MESSAGE
+                );
                 updateStatus({ noResults: true });
                 renderCurrentMovies();
             } else {
@@ -439,16 +532,22 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
         state.hasMoreResults = state.movies.length < state.totalResults;
         state.isLoadingMore = false;
 
+        setNoResultsMessage();
         updateStatus();
         renderCurrentMovies();
         updateResultsCount(state.movies.length, normalizedSearch);
         updatePaginationUi();
     } catch (error) {
         if (!append) {
-            state.movies = [];
+            const fallbackMovies = getFallbackMovies(normalizedSearch);
+            state.movies = fallbackMovies;
             resetPagination();
-            updateStatus({ error: true });
+            state.totalResults = fallbackMovies.length;
+            setNoResultsMessage();
+            updateStatus({ error: true, noResults: fallbackMovies.length === 0 });
             renderCurrentMovies();
+            updateResultsCount(state.movies.length, normalizedSearch);
+            updatePaginationUi();
         } else {
             state.isLoadingMore = false;
             updatePaginationUi();
@@ -483,10 +582,6 @@ function handleInputSearch(event) {
     if (!searchTerm) {
         updateStatus();
         clearResultsCount();
-        return;
-    }
-
-    if (searchTerm.length < 2) {
         return;
     }
 
@@ -584,4 +679,78 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initializeApp);
 } else {
     initializeApp();
+}
+
+function formatTopCast(actorsText) {
+    if (!actorsText || actorsText === "N/A") {
+        return "Top Cast: Not available";
+    }
+
+    const topCast = actorsText
+        .split(",")
+        .map(name => name.trim())
+        .filter(Boolean)
+        .slice(0, 3);
+
+    if (!topCast.length) {
+        return "Top Cast: Not available";
+    }
+
+    return `Top Cast: ${topCast.join(", ")}`;
+}
+
+async function loadMovieCast(movie, tooltipElement) {
+    if (!movie || !movie.imdbID || !tooltipElement) {
+        return;
+    }
+
+    if (state.castByMovieId[movie.imdbID]) {
+        tooltipElement.textContent = state.castByMovieId[movie.imdbID];
+        return;
+    }
+
+    if (!/^tt\d{7,9}$/.test(movie.imdbID)) {
+        const fallbackText = "Top Cast: Not available";
+        state.castByMovieId[movie.imdbID] = fallbackText;
+        tooltipElement.textContent = fallbackText;
+        return;
+    }
+
+    tooltipElement.textContent = "Top Cast: Loading...";
+
+    try {
+        const response = await fetch(`${MOVIE_PROXY_BASE_URL}?id=${encodeURIComponent(movie.imdbID)}`);
+
+        if (!response.ok) {
+            throw new Error("Movie cast request failed");
+        }
+
+        const details = await response.json();
+        const castText = formatTopCast(details.Actors);
+        state.castByMovieId[movie.imdbID] = castText;
+        tooltipElement.textContent = castText;
+    } catch (error) {
+        console.error("Could not load movie cast:", error);
+        const fallbackText = "Top Cast: Not available";
+        state.castByMovieId[movie.imdbID] = fallbackText;
+        tooltipElement.textContent = fallbackText;
+    }
+}
+
+function positionCastTooltip(tooltipElement, cardElement, event) {
+    if (!tooltipElement || !cardElement || !event) {
+        return;
+    }
+
+    const cardRect = cardElement.getBoundingClientRect();
+    const xOffset = event.clientX - cardRect.left + 12;
+    const yOffset = event.clientY - cardRect.top + 12;
+
+    const maxX = cardRect.width - 10;
+    const maxY = cardRect.height - 10;
+    const nextX = Math.max(10, Math.min(xOffset, maxX));
+    const nextY = Math.max(10, Math.min(yOffset, maxY));
+
+    tooltipElement.style.left = `${nextX}px`;
+    tooltipElement.style.top = `${nextY}px`;
 }

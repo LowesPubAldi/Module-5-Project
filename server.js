@@ -214,9 +214,9 @@ function isValidImdbId(value) {
 function validateSearchTerm(value) {
     const trimmed = value.trim();
 
-    if (trimmed.length < 2) {
+    if (trimmed.length < 1) {
         return {
-            error: "Search query must be at least 2 characters.",
+            error: "Search query must be at least 1 character.",
             statusCode: 422
         };
     }
