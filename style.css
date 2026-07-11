@@ -298,6 +298,33 @@ a:focus-visible {
     line-height: 1.45;
 }
 
+.focus-alt-media {
+    margin-top: 8px;
+    border: 1px solid #dbe4f0;
+    background: #f8fbff;
+    border-radius: 8px;
+    padding: 10px;
+    width: fit-content;
+}
+
+.focus-alt-media__label {
+    margin: 0;
+    color: #3b4a5e;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.focus-alt-media__image {
+    margin-top: 8px;
+    width: 120px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    display: block;
+}
+
 .focus-cast-toggle {
     margin-top: 8px;
     border: 1px solid #d1d5db;
