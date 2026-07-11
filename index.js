@@ -3,6 +3,7 @@ const INPUT_DEBOUNCE_MS = 500;
 const FAVORITES_STORAGE_KEY = "titlescope-favorites";
 const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
+const FALLBACK_PROXY_BASE_URL = "https://hockey-movies-proxy.onrender.com/api/movies";
 const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
 const FALLBACK_MOVIES = [
     {
@@ -99,7 +100,10 @@ const state = {
     currentPage: 1,
     totalResults: 0,
     hasMoreResults: false,
-    isLoadingMore: false
+    isLoadingMore: false,
+    moviesFocusDetails: null,
+    moviesFocusCastExpanded: false,
+    activeProxyBase: null
 };
 
 const elements = {};
@@ -129,6 +133,18 @@ function getElements() {
     elements.detailsRating = document.getElementById("detailsRating");
     elements.loadMoreButton = document.getElementById("loadMoreButton");
     elements.paginationStatus = document.getElementById("paginationStatus");
+    elements.moviesFocusEmpty = document.getElementById("moviesFocusEmpty");
+    elements.moviesFocusBody = document.getElementById("moviesFocusBody");
+    elements.moviesFocusTitle = document.getElementById("moviesFocusTitle");
+    elements.focusRuntime = document.getElementById("focusRuntime");
+    elements.focusGenre = document.getElementById("focusGenre");
+    elements.focusRatingVotes = document.getElementById("focusRatingVotes");
+    elements.focusRelease = document.getElementById("focusRelease");
+    elements.focusCreators = document.getElementById("focusCreators");
+    elements.focusTopCast = document.getElementById("focusTopCast");
+    elements.focusCastToggle = document.getElementById("focusCastToggle");
+    elements.focusFullCast = document.getElementById("focusFullCast");
+    elements.focusPlot = document.getElementById("focusPlot");
 }
 
 function formatDetailText(value, fallback = "Not available") {
@@ -191,6 +207,76 @@ function renderMovieDetails(movieDetails) {
     elements.detailsRating.textContent = `IMDb Rating: ${formatDetailText(movieDetails.imdbRating)}`;
 }
 
+function formatCastList(actorsText, count) {
+    if (!actorsText || actorsText === "N/A") {
+        return "Not available";
+    }
+
+    const cast = actorsText
+        .split(",")
+        .map(name => name.trim())
+        .filter(Boolean);
+
+    if (!cast.length) {
+        return "Not available";
+    }
+
+    return cast.slice(0, count).join(", ");
+}
+
+function renderMoviesFocusPanel() {
+    if (!elements.moviesFocusBody || !elements.moviesFocusEmpty) {
+        return;
+    }
+
+    const details = state.moviesFocusDetails;
+
+    if (!details) {
+        elements.moviesFocusBody.style.display = "none";
+        elements.moviesFocusEmpty.style.display = "block";
+        return;
+    }
+
+    const rating = formatDetailText(details.imdbRating);
+    const votes = formatDetailText(details.imdbVotes);
+    const topCast = formatCastList(details.Actors, 3);
+    const fullCast = formatCastList(details.Actors, Number.POSITIVE_INFINITY);
+
+    elements.moviesFocusTitle.textContent = formatDetailText(details.Title, "Movie");
+    elements.focusRuntime.textContent = formatDetailText(details.Runtime);
+    elements.focusGenre.textContent = formatDetailText(details.Genre);
+    elements.focusRatingVotes.textContent = `${rating} (${votes} votes)`;
+    elements.focusRelease.textContent = `${formatDetailText(details.Year)} | ${formatDetailText(details.Released)}`;
+    elements.focusCreators.textContent = `${formatDetailText(details.Director)} | ${formatDetailText(details.Writer)}`;
+    elements.focusTopCast.textContent = topCast;
+    elements.focusFullCast.textContent = fullCast;
+    elements.focusPlot.textContent = formatDetailText(details.Plot);
+
+    const hasCast = fullCast !== "Not available";
+    if (elements.focusCastToggle) {
+        elements.focusCastToggle.style.display = hasCast ? "inline-flex" : "none";
+        elements.focusCastToggle.setAttribute("aria-expanded", String(state.moviesFocusCastExpanded));
+        elements.focusCastToggle.textContent = state.moviesFocusCastExpanded ? "Hide Full Cast" : "Show Full Cast";
+    }
+
+    if (elements.focusFullCast) {
+        elements.focusFullCast.style.display = state.moviesFocusCastExpanded ? "block" : "none";
+    }
+
+    elements.moviesFocusEmpty.style.display = "none";
+    elements.moviesFocusBody.style.display = "block";
+}
+
+function setMoviesFocusDetails(details) {
+    state.moviesFocusDetails = details;
+    state.moviesFocusCastExpanded = false;
+    renderMoviesFocusPanel();
+}
+
+async function fetchMovieDetailsById(imdbId) {
+    return fetchFromProxy({ id: imdbId });
+}
+
 async function showMovieDetails(movie) {
     if (!movie || !movie.imdbID) {
         return;
@@ -200,16 +286,8 @@ async function showMovieDetails(movie) {
     openDetailsModal();
     setDetailsState({ loading: true });
 
-    const detailsUrl = `${MOVIE_PROXY_BASE_URL}?id=${encodeURIComponent(movie.imdbID)}`;
-
     try {
-        const response = await fetch(detailsUrl);
-
-        if (!response.ok) {
-            throw new Error("Movie details request failed");
-        }
-
-        const details = await response.json();
+        const details = await fetchMovieDetailsById(movie.imdbID);
 
         if (state.activeMovieId !== movie.imdbID) {
             return;
@@ -220,6 +298,7 @@ async function showMovieDetails(movie) {
             return;
         }
 
+        setMoviesFocusDetails(details);
         renderMovieDetails(details);
         setDetailsState({ content: true });
     } catch (error) {
@@ -372,6 +451,52 @@ function updatePaginationUi() {
     }
 }
 
+function getProxyBaseCandidates() {
+    const baseCandidates = [MOVIE_PROXY_BASE_URL, FALLBACK_PROXY_BASE_URL];
+
+    if (state.activeProxyBase && baseCandidates.includes(state.activeProxyBase)) {
+        return [
+            state.activeProxyBase,
+            ...baseCandidates.filter(baseUrl => baseUrl !== state.activeProxyBase)
+        ];
+    }
+
+    return baseCandidates;
+}
+
+function buildProxyUrl(baseUrl, params) {
+    const searchParams = new URLSearchParams(params);
+    return `${baseUrl}?${searchParams.toString()}`;
+}
+
+async function fetchFromProxy(params) {
+    let lastError = null;
+
+    for (const baseUrl of getProxyBaseCandidates()) {
+        const requestUrl = buildProxyUrl(baseUrl, params);
+
+        try {
+            const response = await fetch(requestUrl);
+
+            if (!response.ok) {
+                lastError = new Error(`Proxy request failed with status ${response.status}`);
+                continue;
+            }
+
+            if (state.activeProxyBase !== baseUrl) {
+                state.activeProxyBase = baseUrl;
+                console.info(`Using API proxy base: ${baseUrl}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error("Proxy request failed");
+}
+
 function hideAllCastPreviews(exceptElement = null) {
     document.querySelectorAll(".movie-cast-tooltip.is-visible").forEach(tooltip => {
         if (tooltip === exceptElement) {
@@ -520,16 +645,8 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
 
     updatePaginationUi();
 
-    const url = `${MOVIE_PROXY_BASE_URL}?search=${encodeURIComponent(normalizedSearch)}&page=${page}`;
-
     try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
+        const data = await fetchFromProxy({ search: normalizedSearch, page });
 
         if (!Array.isArray(data.Search)) {
             if (!append) {
@@ -681,6 +798,13 @@ function bindEvents() {
         });
     }
 
+    if (elements.focusCastToggle) {
+        elements.focusCastToggle.addEventListener("click", () => {
+            state.moviesFocusCastExpanded = !state.moviesFocusCastExpanded;
+            renderMoviesFocusPanel();
+        });
+    }
+
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && elements.detailsModal && elements.detailsModal.classList.contains("is-open")) {
             closeDetailsModal();
@@ -716,6 +840,7 @@ function initializeApp() {
     }
 
     renderFavorites();
+    renderMoviesFocusPanel();
     updatePaginationUi();
     fetchMovies(DEFAULT_SEARCH);
 }
@@ -764,13 +889,7 @@ async function loadMovieCast(movie, tooltipElement) {
     tooltipElement.textContent = "Top Cast: Loading...";
 
     try {
-        const response = await fetch(`${MOVIE_PROXY_BASE_URL}?id=${encodeURIComponent(movie.imdbID)}`);
-
-        if (!response.ok) {
-            throw new Error("Movie cast request failed");
-        }
-
-        const details = await response.json();
+        const details = await fetchFromProxy({ id: movie.imdbID });
         const castText = formatTopCast(details.Actors);
         state.castByMovieId[movie.imdbID] = castText;
         tooltipElement.textContent = castText;
