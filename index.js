@@ -4,6 +4,7 @@ const FAVORITES_STORAGE_KEY = "titlescope-favorites";
 const LEGACY_FAVORITES_STORAGE_KEY = "hockey-movies-favorites";
 const MOVIE_PROXY_BASE_URL = "/api/movies";
 const DEFAULT_NO_RESULTS_MESSAGE = "No results matching your search.";
+const DEFAULT_ERROR_MESSAGE = "We could not load movies right now. Please try again.";
 const FALLBACK_MOVIES = [
     {
         imdbID: "fallback-1",
@@ -427,6 +428,14 @@ function setNoResultsMessage(messageText = DEFAULT_NO_RESULTS_MESSAGE) {
     elements.noResultsMessage.textContent = messageText;
 }
 
+function setErrorMessage(messageText = DEFAULT_ERROR_MESSAGE) {
+    if (!elements.errorMessage) {
+        return;
+    }
+
+    elements.errorMessage.textContent = messageText;
+}
+
 function resetPagination() {
     state.currentPage = 1;
     state.totalResults = 0;
@@ -478,7 +487,19 @@ async function fetchFromProxy(params) {
             const response = await fetch(requestUrl);
 
             if (!response.ok) {
-                lastError = new Error(`Proxy request failed with status ${response.status}`);
+                let errorMessage = `Proxy request failed with status ${response.status}`;
+
+                try {
+                    const body = await response.json();
+
+                    if (body && typeof body.error === "string" && body.error.trim()) {
+                        errorMessage = body.error.trim();
+                    }
+                } catch (_bodyError) {
+                    // Use default status-based message when response body is not JSON.
+                }
+
+                lastError = new Error(errorMessage);
                 continue;
             }
 
@@ -640,6 +661,7 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
     if (!append) {
         updateStatus({ loading: true });
         clearResultsCount();
+        setErrorMessage();
     }
 
     updatePaginationUi();
@@ -695,6 +717,7 @@ async function fetchMoviesPage(searchTerm, { append = false, page = 1 } = {}) {
             resetPagination();
             state.totalResults = fallbackMovies.length;
             setNoResultsMessage();
+            setErrorMessage(error.message || DEFAULT_ERROR_MESSAGE);
             updateStatus({ error: true, noResults: fallbackMovies.length === 0 });
             renderCurrentMovies();
             updateResultsCount(state.movies.length, normalizedSearch);
