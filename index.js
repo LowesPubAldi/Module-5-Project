@@ -145,18 +145,6 @@ function getElements() {
     elements.focusCastToggle = document.getElementById("focusCastToggle");
     elements.focusFullCast = document.getElementById("focusFullCast");
     elements.focusPlot = document.getElementById("focusPlot");
-    elements.focusAltMedia = document.getElementById("focusAltMedia");
-    elements.focusAltPoster = document.getElementById("focusAltPoster");
-}
-
-function getAlternateMoviePoster(currentImdbId) {
-    return state.movies.find(movie => {
-        if (!movie || movie.imdbID === currentImdbId) {
-            return false;
-        }
-
-        return typeof movie.Poster === "string" && movie.Poster !== "N/A";
-    }) || null;
 }
 
 function formatDetailText(value, fallback = "Not available") {
@@ -263,23 +251,6 @@ function renderMoviesFocusPanel() {
     elements.focusTopCast.textContent = topCast;
     elements.focusFullCast.textContent = fullCast;
     elements.focusPlot.textContent = formatDetailText(details.Plot);
-
-    if (elements.focusAltMedia && elements.focusAltPoster) {
-        const alternatePosterMovie = getAlternateMoviePoster(details.imdbID);
-
-        if (alternatePosterMovie) {
-            elements.focusAltPoster.src = alternatePosterMovie.Poster;
-            elements.focusAltPoster.alt = `${alternatePosterMovie.Title} poster`;
-            elements.focusAltPoster.onerror = () => {
-                elements.focusAltMedia.style.display = "none";
-            };
-            elements.focusAltMedia.style.display = "block";
-        } else {
-            elements.focusAltPoster.src = "";
-            elements.focusAltPoster.alt = "";
-            elements.focusAltMedia.style.display = "none";
-        }
-    }
 
     const hasCast = fullCast !== "Not available";
     if (elements.focusCastToggle) {
